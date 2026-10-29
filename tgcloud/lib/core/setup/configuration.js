@@ -1,38 +1,24 @@
-import {
-  DEFAULT_LOCALE,
-  PASSPORT_SERVICE_AUTHORIZATION_SETTING_KEY,
-  PASSPORT_SERVICE_BASE_URL_SETTING_KEY,
-} from '../constants.js';
+import { DEFAULT_LOCALE } from '../constants.js';
 import { telegram } from '../telegram.js';
 import { createI18n, LOCALES } from '../../i18n/index.js';
-import { saveSetting } from '../../repository/settings.js';
 import { getAdmins, getUserLocale } from '../../repository/users.js';
-
-const HTTPS_BASE_URL_PATTERN = /^https:\/\/[^/?#\s]+(?:\/[^?#\s]*)?$/;
-const BASIC_AUTHORIZATION_PATTERN = /^Basic [A-Za-z0-9+/]+={0,2}$/;
-
-export async function configurePassportService(input) {
-  const baseUrl = normalizeBaseUrl(input.baseUrl);
-  const authorization = normalizeAuthorization(input.authorization);
-
-  await saveSetting(PASSPORT_SERVICE_AUTHORIZATION_SETTING_KEY, authorization);
-  await saveSetting(PASSPORT_SERVICE_BASE_URL_SETTING_KEY, baseUrl);
-
-  return { ok: true, baseUrl };
-}
 
 export async function configureBot() {
   const locales = Object.keys(LOCALES);
-  const commands = Object.fromEntries(locales.map((locale) => {
+  const configurations = Object.fromEntries(locales.map((locale) => {
     const i18n = createI18n(locale);
 
-    return [locale, userCommands(i18n)];
+    return [locale, {
+      commands: userCommands(i18n),
+      description: i18n.t('bot.description'),
+      shortDescription: i18n.t('bot.shortDescription'),
+    }];
   }));
 
-  await telegram.setCommands({ commands: commands[DEFAULT_LOCALE] });
+  await configureBotProfile(configurations[DEFAULT_LOCALE]);
 
   for (const locale of locales) {
-    await telegram.setCommands({ commands: commands[locale], language_code: locale });
+    await configureBotProfile(configurations[locale], locale);
   }
 
   for (const admin of await getAdmins()) {
@@ -40,6 +26,19 @@ export async function configureBot() {
   }
 
   return { ok: true };
+}
+
+async function configureBotProfile(configuration, languageCode) {
+  const language = languageCode ? { language_code: languageCode } : {};
+
+  await Promise.all([
+    telegram.setCommands({ commands: configuration.commands, ...language }),
+    telegram.setDescription({ description: configuration.description, ...language }),
+    telegram.setShortDescription({
+      short_description: configuration.shortDescription,
+      ...language,
+    }),
+  ]);
 }
 
 export async function configureAdminCommands(telegramUserId, languageCode) {
@@ -67,25 +66,3 @@ function userCommands(i18n) {
   ];
 }
 
-function normalizeBaseUrl(value) {
-  const baseUrl = String(value ?? '').trim();
-
-  if (
-    !HTTPS_BASE_URL_PATTERN.test(baseUrl)
-    || baseUrl.includes('@')
-  ) {
-    throw new Error('Invalid passport API base URL');
-  }
-
-  return baseUrl.replace(/\/$/, '');
-}
-
-function normalizeAuthorization(value) {
-  const authorization = String(value ?? '').trim();
-
-  if (!BASIC_AUTHORIZATION_PATTERN.test(authorization)) {
-    throw new Error('Invalid passport API authorization');
-  }
-
-  return authorization;
-}

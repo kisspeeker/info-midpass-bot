@@ -44,12 +44,7 @@ function createUpdateContext(input, telegram) {
 
   let answered = false;
 
-  if (
-    !sourceMessage?.chat
-    || !Number.isSafeInteger(sourceMessage.chat.id)
-    || !Number.isSafeInteger(from?.id)
-    || from.id <= 0
-  ) {
+  if (!isValidContextSource(sourceMessage, from)) {
     return null;
   }
 
@@ -99,6 +94,14 @@ function createUpdateContext(input, telegram) {
   };
 
   return ctx;
+}
+
+function isValidContextSource(sourceMessage, from) {
+  if (!sourceMessage?.chat || !Number.isSafeInteger(sourceMessage.chat.id)) {
+    return false;
+  }
+
+  return Number.isSafeInteger(from?.id) && from.id > 0;
 }
 
 function buildChatContext(input) {

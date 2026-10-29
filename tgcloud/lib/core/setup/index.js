@@ -1,10 +1,8 @@
 import { grantAdmin, revokeAdmin } from './admin.js';
-import {
-  configureBot,
-  configurePassportService,
-} from './configuration.js';
+import { configureBot } from './configuration.js';
 import { importLegacy } from './legacy.js';
 import { restoreBackup } from './backup.js';
+import { configureSettings } from './settings.js';
 import {
   clearDatabase,
   databaseStats,
@@ -13,7 +11,7 @@ import {
 
 const ACTIONS = Object.freeze({
   configureBot,
-  configurePassportService,
+  configureSettings,
   grantAdmin,
   revokeAdmin,
   databaseStats,

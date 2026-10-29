@@ -15,6 +15,14 @@ export const telegram = {
     return api.setMyCommands(payload);
   },
 
+  setDescription(payload) {
+    return api.setMyDescription(payload);
+  },
+
+  setShortDescription(payload) {
+    return api.setMyShortDescription(payload);
+  },
+
   editMessage(payload) {
     return api.editMessageText(withoutLinkPreview(payload));
   },

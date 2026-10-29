@@ -18,13 +18,7 @@ export async function restoreBackup(input) {
   const rows = input.rows;
   const restore = RESTORE_HANDLERS[tableName];
 
-  if (
-    !BACKUP_TABLE_NAMES.includes(tableName)
-    || !restore
-    || !Array.isArray(rows)
-    || rows.length < 1
-    || rows.length > BACKUP_RESTORE_BATCH_SIZE
-  ) {
+  if (!isValidRestoreBatch(tableName, restore, rows)) {
     throw new Error('Invalid backup restore batch');
   }
 
@@ -32,6 +26,18 @@ export async function restoreBackup(input) {
     table: tableName,
     restored: await restore(rows),
   };
+}
+
+function isValidRestoreBatch(tableName, restore, rows) {
+  if (!BACKUP_TABLE_NAMES.includes(tableName) || !restore) {
+    return false;
+  }
+
+  if (!Array.isArray(rows)) {
+    return false;
+  }
+
+  return rows.length >= 1 && rows.length <= BACKUP_RESTORE_BATCH_SIZE;
 }
 
 async function restoreUsers(rows) {

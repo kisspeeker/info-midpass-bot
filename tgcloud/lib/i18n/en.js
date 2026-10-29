@@ -1,4 +1,18 @@
 export default {
+  bot: {
+    shortDescription: 'Tracking Russian passport applications since 2022',
+    description: [
+      'I track applications for legacy and biometric Russian passports',
+      '',
+      'I automatically notify you when the status changes and let you check it manually',
+      '',
+      'For a biometric passport, send the 25-digit application number or its QR-code link. For a legacy passport, send the application number',
+      '',
+      'Sources: info.midpass.ru and passportzu.kdmid.ru',
+      '',
+      'This bot is not an official service of the Russian Ministry of Foreign Affairs',
+    ].join('\n'),
+  },
   commands: {
     admin: 'Bot statistics',
     start: 'Start bot',

@@ -5,9 +5,9 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "backup": "node scripts/backup-tgcloud-db.mjs",
-    "restore": "node scripts/restore-tgcloud-db.mjs",
-    "deploy": "tgcloud push && node scripts/configure-passport-service.mjs && tgcloud webhook sync && tgcloud run endpoints/setup '{\"action\":\"configureBot\"}'",
+    "backup": "node scripts/tgcloud-backup.mjs",
+    "restore": "node scripts/tgcloud-restore.mjs",
+    "deploy": "tgcloud push && node scripts/tgcloud-sync-settings.mjs && tgcloud webhook sync && tgcloud run endpoints/setup '{\"action\":\"configureBot\"}'",
     "poll": "tgcloud run endpoints/poll",
     "status": "tgcloud status",
     "run": "tgcloud run"

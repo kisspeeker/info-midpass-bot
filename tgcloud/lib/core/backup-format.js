@@ -16,15 +16,7 @@ const TABLE_PARSERS = Object.freeze({
 });
 
 export function validateBackupDocument(data) {
-  if (
-    data?.formatVersion !== BACKUP_FORMAT_VERSION
-    || typeof data.createdAt !== 'string'
-    || !data.tables
-    || typeof data.tables !== 'object'
-    || Array.isArray(data.tables)
-    || !BACKUP_TABLE_NAMES.every((name) => Array.isArray(data.tables[name]))
-    || Object.keys(data.tables).some((name) => !BACKUP_TABLE_NAMES.includes(name))
-  ) {
+  if (!isValidBackupDocument(data)) {
     throw new Error('Invalid TgCloud backup');
   }
 
@@ -63,13 +55,34 @@ function validateRelations(tables) {
   );
 
   for (const subscription of tables.subscriptions) {
-    if (
-      !userIds.has(subscription.telegramUserId)
-      || !orderUids.has(subscription.orderUid)
-    ) {
+    if (!hasSubscriptionRelations(subscription, userIds, orderUids)) {
       throw new Error('Backup contains an orphan subscription');
     }
   }
+}
+
+function isValidBackupDocument(data) {
+  if (data?.formatVersion !== BACKUP_FORMAT_VERSION) {
+    return false;
+  }
+
+  if (typeof data.createdAt !== 'string' || !isPlainObject(data.tables)) {
+    return false;
+  }
+
+  const hasAllTables = BACKUP_TABLE_NAMES.every((name) => Array.isArray(data.tables[name]));
+  const hasUnknownTables = Object.keys(data.tables)
+    .some((name) => !BACKUP_TABLE_NAMES.includes(name));
+
+  return hasAllTables && !hasUnknownTables;
+}
+
+function isPlainObject(value) {
+  return Boolean(value) && typeof value === 'object' && !Array.isArray(value);
+}
+
+function hasSubscriptionRelations(subscription, userIds, orderUids) {
+  return userIds.has(subscription.telegramUserId) && orderUids.has(subscription.orderUid);
 }
 
 function uniqueKeys(rows, getKey, type) {

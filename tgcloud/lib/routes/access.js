@@ -20,8 +20,11 @@ export async function hasRole(ctx, role) {
 
   const userRole = await roleChecks.get(ctx);
 
-  return Object.hasOwn(ROLE_LEVEL, userRole)
-    && ROLE_LEVEL[userRole] >= ROLE_LEVEL[role];
+  if (!Object.hasOwn(ROLE_LEVEL, userRole)) {
+    return false;
+  }
+
+  return ROLE_LEVEL[userRole] >= ROLE_LEVEL[role];
 }
 
 export async function filterByRole(ctx, items) {
