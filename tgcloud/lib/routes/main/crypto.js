@@ -18,22 +18,8 @@ export const cryptoCallbackRoutes = [{
 
 async function showCrypto(ctx, route = {}) {
   const openInNewMessage = ctx.isCallback && route.value === CALLBACK_VALUE.NEW;
-  const faqSource = route.value?.startsWith('faq:')
-    ? route.value.slice(4)
-    : route.value === CALLBACK_VALUE.OPEN ? CALLBACK_VALUE.USAGE : null;
-  const navigationButton = openInNewMessage
-    ? mainMenuBackButton(ctx)
-    : faqSource
-    ? {
-      text: `‹ ${ctx.i18n.t('menu.back')}`,
-      callback_data: createCallbackData(CALLBACK_ACTION.FAQ, faqSource),
-    }
-    : ctx.isCallback
-    ? {
-      text: `‹ ${ctx.i18n.t('menu.back')}`,
-      callback_data: createCallbackData(CALLBACK_ACTION.STATUS, route.value),
-    }
-    : mainMenuBackButton(ctx);
+  const navigationButton = createCryptoNavigationButton(ctx, route.value);
+
   const text = ctx.i18n.t('crypto.text', CRYPTO_WALLETS);
   const extra = {
     parse_mode: 'HTML',
@@ -62,4 +48,33 @@ async function showCrypto(ctx, route = {}) {
   }
 
   await ctx.reply(text, extra);
+}
+
+function createCryptoNavigationButton(ctx, source) {
+  if (!ctx.isCallback || source === CALLBACK_VALUE.NEW) {
+    return mainMenuBackButton(ctx);
+  }
+
+  const faqSource = getFaqSource(source);
+
+  if (faqSource) {
+    return backButton(ctx, CALLBACK_ACTION.FAQ, faqSource);
+  }
+
+  return backButton(ctx, CALLBACK_ACTION.STATUS, source);
+}
+
+function getFaqSource(source) {
+  if (source?.startsWith('faq:')) {
+    return source.slice(4);
+  }
+
+  return source === CALLBACK_VALUE.OPEN ? CALLBACK_VALUE.USAGE : null;
+}
+
+function backButton(ctx, action, value) {
+  return {
+    text: `‹ ${ctx.i18n.t('menu.back')}`,
+    callback_data: createCallbackData(action, value),
+  };
 }

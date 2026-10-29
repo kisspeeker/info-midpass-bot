@@ -108,11 +108,7 @@ function parseOrder(value) {
   const uid = String(value?.uid ?? '');
   const type = value?.type;
   const checkedAt = requiredTimestamp(value?.checkedAt);
-  const validUid = type === PASSPORT_TYPE.BIOMETRIC
-    ? BIOMETRIC_UID_PATTERN.test(uid)
-    : type === PASSPORT_TYPE.LEGACY_TYPE
-      && LEGACY_UID_PATTERN.test(uid)
-      && uid.length <= LEGACY_TYPE_UID_MAX_LENGTH;
+  const validUid = isValidOrderUid(uid, type);
 
   if (!validUid) {
     throw new Error('Invalid order backup row');
@@ -133,6 +129,18 @@ function parseOrder(value) {
     internalStatusName: nullableString(value.internalStatusName),
     internalStatusPercent: nullablePercent(value.internalStatusPercent),
   };
+}
+
+function isValidOrderUid(uid, type) {
+  if (type === PASSPORT_TYPE.BIOMETRIC) {
+    return BIOMETRIC_UID_PATTERN.test(uid);
+  }
+
+  if (type === PASSPORT_TYPE.LEGACY_TYPE) {
+    return LEGACY_UID_PATTERN.test(uid) && uid.length <= LEGACY_TYPE_UID_MAX_LENGTH;
+  }
+
+  return false;
 }
 
 function parseSubscription(value) {

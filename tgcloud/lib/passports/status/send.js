@@ -16,24 +16,7 @@ export async function sendPassportStatus(ctx, status) {
 
   const extra = {
     parse_mode: 'HTML',
-    reply_markup: {
-      inline_keyboard: notification ? [[{
-        text: i18n.t('crypto.open'),
-        callback_data: createCallbackData(CALLBACK_ACTION.CRYPTO, CALLBACK_VALUE.NEW),
-      }]] : [[{
-        text: i18n.t('subscriptions.refresh'),
-        callback_data: createCallbackData(CALLBACK_ACTION.REFRESH, order.uid),
-      }], [{
-        text: i18n.t('crypto.open'),
-        callback_data: createCallbackData(CALLBACK_ACTION.CRYPTO, order.uid),
-      }], [{
-        text: i18n.t('menu.subscriptions'),
-        callback_data: createCallbackData(CALLBACK_ACTION.SUBSCRIPTIONS, CALLBACK_VALUE.LIST),
-      }, {
-        text: i18n.t('menu.main'),
-        callback_data: createCallbackData(CALLBACK_ACTION.MENU, CALLBACK_VALUE.OPEN),
-      }]],
-    },
+    reply_markup: createStatusKeyboard(i18n, order, notification),
   };
 
   if (ctx.isCallback) {
@@ -43,4 +26,28 @@ export async function sendPassportStatus(ctx, status) {
   }
 
   await ctx.reply(text, extra);
+}
+
+function createStatusKeyboard(i18n, order, notification) {
+  if (notification) {
+    return {
+      inline_keyboard: [[{
+        text: i18n.t('crypto.open'),
+        callback_data: createCallbackData(CALLBACK_ACTION.CRYPTO, CALLBACK_VALUE.NEW),
+      }]],
+    };
+  }
+
+  return {
+    inline_keyboard: [[{
+      text: i18n.t('subscriptions.refresh'),
+      callback_data: createCallbackData(CALLBACK_ACTION.REFRESH, order.uid),
+    }], [{
+      text: i18n.t('menu.subscriptions'),
+      callback_data: createCallbackData(CALLBACK_ACTION.SUBSCRIPTIONS, CALLBACK_VALUE.LIST),
+    }, {
+      text: i18n.t('menu.main'),
+      callback_data: createCallbackData(CALLBACK_ACTION.MENU, CALLBACK_VALUE.OPEN),
+    }]],
+  };
 }
