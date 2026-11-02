@@ -1,0 +1,22 @@
+direction: right
+menu: "Меню\n/start · /menu"
+add: "Новый паспорт\nТип → ввод номера"
+status: "Статус\nОбновить · Меню"
+subscriptions: "Подписки"
+unsubscribe: "Отписаться?\nДа / отмена"
+faq: "FAQ\nИнструкция / поддержать"
+about: "О статусах"
+language: "Язык\nRU / EN → меню"
+wallets: "Кошельки\nКопировать адрес"
+admin: "Статистика\nТолько админ"
+menu -> add
+add -> status
+menu -> subscriptions
+subscriptions -> status: "Обновить"
+subscriptions -> unsubscribe: "Отписаться"
+status -> subscriptions: "Подписки"
+menu -> faq
+menu -> about
+menu -> language
+menu -> admin
+faq -> wallets: "Поддержать"
