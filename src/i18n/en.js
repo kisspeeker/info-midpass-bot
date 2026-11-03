@@ -67,7 +67,7 @@ export default {
     changed: 'The application status has changed',
     applicationTitle: '<b>Application</b>',
     applicationLine: (uid) => `<code>${uid}</code>`,
-    updatedLine: (date) => `<b>Checked:</b> ${date}`,
+    updatedLine: (date) => `<b>Checked:</b> ${date} MSK`,
     statusLine: (status) => status,
     summary: ({ percent, status }) => `<b>${percent}% · ${status}</b>`,
     pendingTitle: '<b>Status pending</b>',

@@ -67,7 +67,7 @@ export default {
     changed: 'Статус заявления изменился',
     applicationTitle: '<b>Заявление</b>',
     applicationLine: (uid) => `<code>${uid}</code>`,
-    updatedLine: (date) => `<b>Проверено:</b> ${date}`,
+    updatedLine: (date) => `<b>Проверено:</b> ${date} МСК`,
     statusLine: (status) => status,
     summary: ({ percent, status }) => `<b>${percent}% · ${status}</b>`,
     pendingTitle: '<b>Статус ожидается</b>',
