@@ -2,15 +2,14 @@ import {
   PASSPORT_UPSTREAMS,
   PASSPORT_TYPE,
   STATUS_TEXT_MAX_LENGTH,
-  shutdown,
-} from '../config.js';
+} from '../constants.js';
 import { requestJson, PassportServiceError } from './client.js';
-import { isPassportUid } from '../lib/passport-uid.js';
-import { includesStatus } from '../lib/text.js';
+import { isPassportUid } from '../commands/passport/uid.js';
+import { includesStatus } from '../helpers/text.js';
 
 const LEGACY_NOT_FOUND = 'заявление с таким номером не было сохранено';
 
-export async function fetchPassport(input) {
+export async function fetchPassport(input, signal) {
   const { type, uid, allowPending = false } = input;
 
   if (!Object.hasOwn(PASSPORT_UPSTREAMS, type)) {
@@ -28,7 +27,7 @@ export async function fetchPassport(input) {
     path: legacy ? config.path : `${config.path}/${uid}`,
     searchParams: legacy ? { folderId: uid } : undefined,
     referer: config.referer,
-    signal: shutdown.signal,
+    signal,
   });
 
   return legacy ? parseLegacyPassport(data) : parseBiometricPassport(data, allowPending);

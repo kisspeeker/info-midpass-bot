@@ -1,7 +1,8 @@
 import { parseArgs } from 'node:util';
 
-import { MAINTENANCE_URL, POLL_TIMEOUT_MS, maintenanceToken } from '../src/config.js';
-import { logger } from '../src/lib/logger.js';
+import { MAINTENANCE_URL, maintenanceToken } from '../src/config.js';
+import { POLL_TIMEOUT_MS } from '../src/constants.js';
+import { logger } from '../src/services/logger.js';
 
 try {
   const { values } = parseArgs({ options: { limit: { type: 'string' } } });

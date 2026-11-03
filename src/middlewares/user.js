@@ -1,17 +1,18 @@
-import { createI18n, localeFrom } from '../i18n/index.js';
+import { ROLE_LEVEL } from '../constants.js';
+import { createI18n } from '../i18n/index.js';
 
-/** @typedef {import('../types/telegram.js').BotContext} BotContext */
-
-/**
- * @param {import('../types/index.js').Services} services
- * @param {{configureChat: (id: number, locale?: import('../types/index.js').Locale) => Promise<void>}} profile
- * @returns {import('grammy').Middleware<BotContext>}
- */
-export function userContext(services, profile) {
+export function createUserMiddleware(services, profile) {
   return async (ctx, next) => {
     ctx.services = services;
-    ctx.i18n = createI18n(await services.users.register(ctx.from.id, localeFrom(ctx.from.language_code)));
-    ctx.syncCommands = () => profile.configureChat(ctx.from.id, ctx.i18n.locale);
+    ctx.user = services.users.ensure(ctx.from);
+    ctx.i18n = createI18n(ctx.user.languageCode);
+    ctx.can = (role = 'user') => ROLE_LEVEL[ctx.user.role] >= ROLE_LEVEL[role];
+    ctx.setLocale = async (locale) => {
+      services.users.setLocale(ctx.user.telegramUserId, locale);
+      ctx.user.languageCode = locale;
+      ctx.i18n = createI18n(locale);
+      await profile.configureChat(ctx.from.id, locale);
+    };
     await next();
   };
 }

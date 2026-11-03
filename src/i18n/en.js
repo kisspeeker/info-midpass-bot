@@ -1,4 +1,6 @@
 export default {
+  unavailable: 'Action unavailable',
+  forbidden: 'Access denied',
   bot: {
     shortDescription: 'Tracking Russian passport applications since 2022',
     description: [
@@ -14,6 +16,12 @@ export default {
     ].join('\n'),
   },
   commands: {
+    about: 'About statuses',
+    faq: 'FAQ',
+    language: 'Language',
+    subscriptions: 'My subscriptions',
+    crypto: 'Donate cryptocurrency',
+
     admin: 'Bot statistics',
     start: 'Start bot',
     menu: 'Open menu',
@@ -36,10 +44,6 @@ export default {
   },
   menu: {
     title: 'Choose an action:',
-    subscriptions: 'My subscriptions',
-    statuses: 'About statuses',
-    faq: 'FAQ',
-    language: 'Language',
     back: '‹ Back',
     main: 'Menu',
   },
@@ -47,6 +51,7 @@ export default {
     title: 'Choose a language:',
   },
   passport: {
+    chooseType: 'Choose passport type:',
     legacyType: 'Legacy type (5 years)',
     biometric: 'Biometric',
     legacyTypePrompt: 'Enter the application number for a legacy type passport:',
@@ -111,7 +116,7 @@ export default {
       'The bot checks passport application statuses and notifies you about changes',
       '',
       '1. Choose the passport type',
-      '2. Reply to the bot with the application number',
+      '2. Send the application number',
       '3. Manage tracking under “My subscriptions”',
       '💬 Ask a question: /support',
       '',
@@ -140,7 +145,6 @@ export default {
     text: donationLine(),
   },
   cryptoDonation: {
-    open: 'Support with crypto',
     text: cryptoDonationText,
     copy: (symbol) => `Copy ${symbol}`,
   },

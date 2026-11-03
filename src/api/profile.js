@@ -1,22 +1,27 @@
-import { logger } from '../lib/logger.js';
-import { DEFAULT_LOCALE, ROLE } from '../config.js';
+import { ROLE } from '../constants.js';
+import { logger } from '../services/logger.js';
+import { DEFAULT_LOCALE } from '../constants.js';
 import { createI18n, LOCALES } from '../i18n/index.js';
 
-export function createProfileClient({ api, users, commands }) {
-  function localizedCommands(i18n, role) {
-    return commands.filter((command) => !command.role || command.role === role)
-      .map((command) => ({ command: command.command, description: i18n.t(command.description) }));
+export function createProfileClient({ api, users }) {
+  function localizedCommands(i18n, role = ROLE.USER) {
+    const commands = ['start', 'menu', 'support', 'delete', 'crypto'];
+
+    if (role === ROLE.ADMIN) {
+      commands.push('admin');
+    }
+
+    return commands.map((command) => ({ command, description: i18n.t(`commands.${command}`) }));
   }
 
   async function configureChat(id, languageCode) {
-    const i18n = createI18n(languageCode ?? await users.getLocale(id));
-    const role = await users.getRole(id);
+    const i18n = createI18n(languageCode ?? users.getLocale(id));
+    const role = users.getRole(id);
 
     await api.setMyCommands(localizedCommands(i18n, role), { scope: { type: 'chat', chat_id: id } });
   }
 
   return {
-    configureAdmin: configureChat,
     configureChat,
     resetAdmin: (id) => api.deleteMyCommands({ scope: { type: 'chat', chat_id: id } }),
     async configure() {
@@ -31,7 +36,7 @@ export function createProfileClient({ api, users, commands }) {
         ]);
       }
 
-      for (const admin of await users.admins()) {
+      for (const admin of users.admins()) {
         try {
           await configureChat(admin.telegramUserId, admin.languageCode);
         } catch (error) {

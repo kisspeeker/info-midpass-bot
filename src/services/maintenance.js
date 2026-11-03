@@ -1,10 +1,8 @@
-import { ROLE } from '../config.js';
+import { ROLE } from '../constants.js';
 
-/** @param {{maintenance: import('../types/index.js').MaintenanceRepository, users: import('../types/index.js').UserService}} dependencies */
 export function createMaintenanceService({ maintenance, users }) {
   return {
-    getStats: () => maintenance.getStats(),
-    async setup(input = {}) {
+    setup(input = {}) {
       const id = input.telegramUserId;
 
       switch (input.action) {
@@ -12,7 +10,7 @@ export function createMaintenanceService({ maintenance, users }) {
           return maintenance.getStats();
         case 'grantAdmin':
         case 'revokeAdmin':
-          await users.setRole(id, input.action === 'grantAdmin' ? ROLE.ADMIN : ROLE.USER);
+          users.setRole(id, input.action === 'grantAdmin' ? ROLE.ADMIN : ROLE.USER);
 
           return { ok: true };
         case 'deleteUser':
@@ -20,7 +18,7 @@ export function createMaintenanceService({ maintenance, users }) {
             throw new Error('Invalid Telegram user ID');
           }
 
-          await users.remove(id);
+          users.remove(id);
 
           return { ok: true, telegramUserId: id };
         case 'clearDatabase':
@@ -28,7 +26,7 @@ export function createMaintenanceService({ maintenance, users }) {
             throw new Error('Confirmation must be: DELETE BOT DATA');
           }
 
-          return { deleted: await maintenance.clear() };
+          return { deleted: maintenance.clear() };
         default:
           throw new Error('Unknown setup action');
       }

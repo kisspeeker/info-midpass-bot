@@ -1,6 +1,6 @@
 import PQueue from 'p-queue';
 
-import { PASSPORT_UPSTREAM_POLICY, PASSPORT_UPSTREAMS, UPSTREAM_HEADERS } from '../config.js';
+import { PASSPORT_UPSTREAM_POLICY, PASSPORT_UPSTREAMS, UPSTREAM_HEADERS } from '../constants.js';
 
 const queues = new Map(Object.values(PASSPORT_UPSTREAMS).map(({ baseUrl }) => [new URL(baseUrl).origin, new PQueue({
   concurrency: 1,

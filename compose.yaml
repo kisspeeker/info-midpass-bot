@@ -1,0 +1,21 @@
+services:
+  bot:
+    image: ${IMAGE:?required}
+    restart: unless-stopped
+    init: true
+    stop_grace_period: 60s
+    environment:
+      TELEGRAM_BOT_TOKEN: ${TELEGRAM_BOT_TOKEN:?set Telegram Bot API token}
+      TELEGRAM_ADMIN_IDS: ${TELEGRAM_ADMIN_IDS:-}
+      DB_PATH: /data/bot.db
+    volumes:
+      - bot-data:/data
+    healthcheck:
+      test: [CMD, node, scripts/health.js]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
+
+volumes:
+  bot-data:

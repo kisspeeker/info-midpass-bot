@@ -1,0 +1,38 @@
+vars: {
+  d2-config: {
+    pad: 24
+  }
+}
+
+grid-columns: 1
+style.fill: "#FFFFFF"
+
+runtime: Runtime connections {
+  direction: down
+  style.fill: "#F1F5F9"
+  style.font-size: 24
+
+  telegram: "Telegram Bot API"
+  bot: "Bot · Node.js + grammY\nCommands · support\nStatus checks · notifications" {
+    style.fill: "#DBEAFE"
+  }
+  proxy: "xray-client\nHTTP proxy :7890"
+  midpass: "Passport status APIs\npassportzu.kdmid.ru · legacy\ninfo.midpass.ru · biometric"
+  db: "SQLite · /data/bot.db\nUsers · applications\nSubscriptions" {
+    shape: cylinder
+    style.fill: "#F0FDF4"
+  }
+
+  telegram <-> bot: "Long polling / replies"
+  bot -> proxy: "Passport requests"
+  proxy -> midpass: HTTPS
+  bot -> db: "Read / write"
+
+  *.style.font-size: 20
+}
+
+operations: "Built-in scheduler · Europe/Moscow\nDaily 09:00 / 17:00 + weekdays 13:00 / 21:00\nManual check: authenticated POST /jobs/poll\nHealth: GET /health/live · HTTP on 127.0.0.1:8080\nPersistent /data · backups run externally" {
+  style.fill: "#FFFBEB"
+  style.stroke: "#D97706"
+  style.font-size: 20
+}

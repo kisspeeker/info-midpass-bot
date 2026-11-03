@@ -1,4 +1,6 @@
 export default {
+  unavailable: 'Действие недоступно',
+  forbidden: 'Недостаточно прав',
   bot: {
     shortDescription: 'Отслеживает заявления на загранпаспорт РФ с 2022 года',
     description: [
@@ -14,6 +16,12 @@ export default {
     ].join('\n'),
   },
   commands: {
+    about: 'О статусах',
+    faq: 'FAQ',
+    language: 'Язык',
+    subscriptions: 'Мои подписки',
+    crypto: 'Поддержать криптовалютой',
+
     admin: 'Состояние базы',
     start: 'Начать работу',
     menu: 'Открыть меню',
@@ -36,10 +44,6 @@ export default {
   },
   menu: {
     title: 'Выберите действие:',
-    subscriptions: 'Мои подписки',
-    statuses: 'О статусах',
-    faq: 'FAQ',
-    language: 'Язык',
     back: '‹ Назад',
     main: 'Меню',
   },
@@ -47,6 +51,7 @@ export default {
     title: 'Выберите язык:',
   },
   passport: {
+    chooseType: 'Выберите тип паспорта:',
     legacyType: 'Старого образца (5-летний)',
     biometric: 'Биометрический',
     legacyTypePrompt: 'Введите номер заявления для паспорта старого образца:',
@@ -111,7 +116,7 @@ export default {
       'Бот проверяет статус заявления на загранпаспорт и уведомляет об изменениях',
       '',
       '1. Выберите тип паспорта',
-      '2. Отправьте номер заявления ответом на сообщение бота',
+      '2. Отправьте номер заявления',
       '3. Управляйте отслеживанием через «Мои подписки»',
       '💬 Задать вопрос: /support',
       '',
@@ -140,7 +145,6 @@ export default {
     text: donationLine(),
   },
   cryptoDonation: {
-    open: 'Поддержать криптовалютой',
     text: cryptoDonationText,
     copy: (symbol) => `Скопировать ${symbol}`,
   },

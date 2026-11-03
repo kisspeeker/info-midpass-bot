@@ -1,6 +1,7 @@
 import { Api } from 'grammy';
 
-import { requireBotToken, TELEGRAM_TIMEOUT_SECONDS } from '../config.js';
+import { requireBotToken } from '../config.js';
+import { TELEGRAM_TIMEOUT_SECONDS } from '../constants.js';
 
 export const telegramClientOptions = { timeoutSeconds: TELEGRAM_TIMEOUT_SECONDS };
 
