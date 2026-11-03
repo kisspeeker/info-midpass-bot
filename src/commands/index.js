@@ -23,15 +23,17 @@ composer.use(conversations({
   }],
 }));
 composer.use(async (ctx, next) => {
-  if (ctx.callbackQuery) {
-    await ctx.answerCallbackQuery();
-  }
-
   if (ctx.has('message:entities:bot_command') || ctx.callbackQuery) {
     await ctx.conversation.exitAll();
   }
 
-  await next();
+  try {
+    await next();
+  } finally {
+    if (ctx.callbackQuery && !ctx.callbackQueryAnswered) {
+      await ctx.answerCallbackQuery();
+    }
+  }
 });
 composer.use(menu, about, faq, admin, account, cryptoDonation, subscriptions, passport, support);
 composer.on('callback_query:data', (ctx) => ctx.reply(ctx.t('unavailable')));

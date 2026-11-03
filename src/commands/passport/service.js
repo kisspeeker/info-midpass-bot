@@ -72,7 +72,7 @@ export function createPassportService({ passports, subscriptions, users, fetchPa
       } catch (error) {
         logger?.error('passport_refresh_failed', error, { type: result.order.type, uid });
 
-        return { status: 'refreshFailed' };
+        return { status: 'refreshFailed', order: result.order };
       }
     },
     unsubscribe(userId, uid) {

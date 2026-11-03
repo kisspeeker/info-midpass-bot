@@ -3,6 +3,10 @@ import { InlineKeyboard } from 'grammy';
 export async function contextMiddleware(ctx, next) {
   ctx.keyboard = () => new InlineKeyboard();
   ctx.t = (key, params) => ctx.i18n.t(key, params);
+  ctx.alert = async (text) => {
+    await ctx.answerCallbackQuery({ text, show_alert: true });
+    ctx.callbackQueryAnswered = true;
+  };
   ctx.screen = async (text, keyboard, extra = {}) => {
     if (!ctx.callbackQuery) {
       return ctx.reply(text, { ...extra, reply_markup: keyboard });

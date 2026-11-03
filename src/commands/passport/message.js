@@ -63,30 +63,31 @@ export function passportStatusMessage({ order, i18n, notification = false, prefi
 }
 
 export async function showPassportResult({ ctx, result, i18n = ctx.i18n }) {
-  if (result.status === 'recent' && !result.order) {
-    await ctx.reply(i18n.t('passport.recent'));
-  }
-
   if (result.order) {
     const prefixes = {
       added: 'passport.added', alreadyTracked: 'subscriptions.alreadyTracked',
-      refreshed: 'passport.refreshed', recent: 'passport.recent',
+      refreshed: 'passport.refreshed',
     };
     const { text, keyboard } = passportStatusMessage({
       i18n, order: result.order, prefix: prefixes[result.status] ? i18n.t(prefixes[result.status]) : '',
     });
 
-    return ctx.callbackQuery
-      ? ctx.screen(text, keyboard, { parse_mode: 'HTML' })
-      : ctx.reply(text, { parse_mode: 'HTML', reply_markup: keyboard });
+    if (ctx.callbackQuery) {
+      await ctx.screen(text, keyboard, { parse_mode: 'HTML' });
+    } else {
+      await ctx.reply(text, { parse_mode: 'HTML', reply_markup: keyboard });
+    }
   }
 
   const errors = {
+    recent: 'passport.recent',
     limit: 'subscriptions.limit', fetchFailed: 'passport.fetchFailed', notFound: 'subscriptions.notFound',
     applicationNotFound: 'passport.applicationNotFound', refreshFailed: 'passport.refreshFailed',
   };
 
   if (errors[result.status]) {
-    return ctx.reply(i18n.t(errors[result.status], MAX_SUBSCRIPTIONS_PER_USER));
+    const text = i18n.t(errors[result.status], MAX_SUBSCRIPTIONS_PER_USER);
+
+    return ctx.callbackQuery ? ctx.alert(text) : ctx.reply(text);
   }
 }

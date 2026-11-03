@@ -37,6 +37,14 @@ subscriptions.callbackQuery(/^status:(\d+)$/, (ctx) => {
 });
 
 subscriptions.callbackQuery(/^refresh:(l:)?(\d+)$/, async (ctx) => {
+  const current = ctx.services.passports.getStatus(ctx.from.id, ctx.match[2]);
+
+  await showPassportResult({ ctx, result: current });
+
+  if (!current.order) {
+    return;
+  }
+
   const result = await ctx.services.passports.refresh(ctx.from.id, {
     uid: ctx.match[2],
   });
