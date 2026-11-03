@@ -63,12 +63,15 @@ export function passportStatusMessage({ order, i18n, notification = false, prefi
 }
 
 export async function showPassportResult({ ctx, result, i18n = ctx.i18n }) {
-  if (result.status === 'recent') {
+  if (result.status === 'recent' && !result.order) {
     await ctx.reply(i18n.t('passport.recent'));
   }
 
   if (result.order) {
-    const prefixes = { added: 'passport.added', alreadyTracked: 'subscriptions.alreadyTracked', refreshed: 'passport.refreshed' };
+    const prefixes = {
+      added: 'passport.added', alreadyTracked: 'subscriptions.alreadyTracked',
+      refreshed: 'passport.refreshed', recent: 'passport.recent',
+    };
     const { text, keyboard } = passportStatusMessage({
       i18n, order: result.order, prefix: prefixes[result.status] ? i18n.t(prefixes[result.status]) : '',
     });

@@ -52,7 +52,7 @@ export function createPassportService({ passports, subscriptions, users, fetchPa
         return { status: 'fetchFailed' };
       }
     },
-    async refresh(userId, { uid, showStatusOnCooldown = false }) {
+    async refresh(userId, { uid }) {
       const result = getStatus(userId, uid);
 
       if (result.status !== 'ok') {
@@ -62,7 +62,7 @@ export function createPassportService({ passports, subscriptions, users, fetchPa
       const retryAfter = users.claimStatusRefresh(userId);
 
       if (retryAfter) {
-        return { status: 'recent', ...(showStatusOnCooldown ? { order: result.order } : {}) };
+        return { status: 'recent', order: result.order };
       }
 
       try {

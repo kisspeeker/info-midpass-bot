@@ -9,7 +9,7 @@ const emptySummary = () => ({ checked: 0, changed: 0, failed: 0, notified: 0 });
 export function createPollingService({ passports, subscriptions, users, fetchPassport, notify, signal, logger, now = unixTimeNow }) {
   const updates = new PQueue({ concurrency: 1 });
 
-  function refresh(input, summary = emptySummary()) {
+  function refresh(input, { notifySubscribers = false, summary = emptySummary() } = {}) {
     // Do not abort the queue promise early: shutdown must await the actual work.
     return updates.add(async () => {
       signal?.throwIfAborted();
@@ -31,11 +31,11 @@ export function createPollingService({ passports, subscriptions, users, fetchPas
 
       signal?.throwIfAborted();
 
-      return applyUpdate(input.uid, passport, summary);
+      return applyUpdate(input.uid, passport, { notifySubscribers, summary });
     });
   }
 
-  async function applyUpdate(uid, passport, summary = emptySummary()) {
+  async function applyUpdate(uid, passport, { notifySubscribers, summary }) {
     const order = passports.getById(uid);
     const subscribers = subscriptions.listByPassport(uid);
 
@@ -53,7 +53,9 @@ export function createPollingService({ passports, subscriptions, users, fetchPas
 
     if (changed) {
       summary.changed += 1;
+    }
 
+    if (changed && notifySubscribers) {
       for (const subscriber of subscribers) {
         signal?.throwIfAborted();
 
@@ -97,7 +99,7 @@ export function createPollingService({ passports, subscriptions, users, fetchPas
           signal?.throwIfAborted();
 
           try {
-            await refresh({ ...candidate, allowPending: true }, summary);
+            await refresh({ ...candidate, allowPending: true }, { notifySubscribers: true, summary });
           } catch (error) {
             summary.failed += 1;
             logger?.error('passport_poll_failed', error, { type: candidate.type, uid: candidate.uid });

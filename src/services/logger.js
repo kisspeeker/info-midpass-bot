@@ -29,6 +29,11 @@ export const logger = Object.freeze({
 function write(level, event, details = {}) {
   const metadata = Object.fromEntries(Object.entries(details).filter(([key, value]) => metadataKeys.includes(key)
     && ['string', 'number', 'boolean'].includes(typeof value)));
+
+  if (typeof details.uid === 'string' && /^\d+$/.test(details.uid)) {
+    metadata.orderRef = `*${details.uid.slice(Math.max(1, details.uid.length - 6))}`;
+  }
+
   const line = JSON.stringify({ time: new Date().toISOString(), event, ...metadata });
 
   console[level](line);
